@@ -15,7 +15,7 @@ pd.set_option('display.float_format', '{:.3f}'.format) # Formato para números f
 
 # --- CONFIGURACIÓN DE ESTILO PARA GRÁFICOS ---
 plt.style.use('seaborn-v0_8-darkgrid') # Define un estilo visual oscuro con cuadrícula para matplotlib
-sns.set_palette("husl") # Define la paleta de colores para seaborn
+#sns.set_palette("husl") # Define la paleta de colores para seaborn
 
 # --- CARGA DEL DATASET ---
 df = pd.read_csv(DATASET) # Lee el archivo CSV y guardarlo en un DataFrame
@@ -51,7 +51,7 @@ missing_df = missing_df[missing_df['Cantidad Nulos'] > 0] # Filtra columnas con 
 if len(missing_df) > 0:
     print(missing_df)
 else:
-    print("   No se encontraron valores nulos!")
+    print(f"   Valores nulos: {len(missing_df)}")
 
 # --- REVISIÓN DE VALORES DUPLICADOS ---
 print("\n6. Revisión de registros duplicados:")
@@ -61,10 +61,18 @@ if duplicates > 0:
     df = df.drop_duplicates()
     print(f"   {duplicates} filas duplicadas eliminadas")
 
-
 # --- ESTADÍSTICAS BÁSICAS ---
 print("\n7. ESTADÍSTICAS BÁSICAS - Variables Numéricas:")
 print(df.describe())
+
+numericas = df.select_dtypes(include='number') # Seleccionamos solo las columnas numéricas
+# Dibujar un boxplot por cada variable
+for col in numericas.columns:
+    plt.figure(figsize=(6,4))
+    plt.boxplot(numericas[col], vert=True, patch_artist=True)
+    plt.title(f"Boxplot de {col}")
+    plt.ylabel(col)
+    plt.show()
 
 print("\n8. ESTADÍSTICAS BÁSICAS - Variables Categóricas:")
 print(df.describe(include="object").T)
