@@ -7,30 +7,61 @@ from sklearn.decomposition import PCA
 
 DATASET = "Amazon.csv"
 
-pd.set_option('display.max_columns', None)  # Mostrar todas las columnas
-pd.set_option('display.width', 180)         # Ajusta el ancho de la salida
-pd.set_option('display.max_rows', 100)
-pd.set_option('display.float_format', '{:.2f}'.format)
+df = pd.read_csv(DATASET, decimal='.', skipinitialspace=True)
 
-# Set style for plots
-plt.style.use('seaborn-v0_8-darkgrid')
-sns.set_palette("husl")
+# Limpiar nombres de columna:
+# - quitar espacios
+# - reemplazar caracteres especiales por _
+# - pasar todo a minúsculas (opcional)
+df.columns = (
+    df.columns.str.strip()                # Quita espacios
+              .str.replace(r'[^\w]', '_', regex=True)  # Reemplaza todo lo que no sea letra/número por _
+              .str.lower()                # Minusculas opcional
+)
 
-# Load the dataset
-df = pd.read_csv(DATASET)
+# Limpiar los datos de strings
+df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
-print("\n1. DATASET DIMENSIONS:")
-print(f"   Shape: {df.shape}")
-print(f"   Total Records: {df.shape[0]:,}")
-print(f"   Total Features: {df.shape[1]}")
+# Forzar columnas numéricas
+numeric_cols = ['quantity', 'unitprice', 'discount', 'tax', 'shippingcost', 'totalamount']
+for col in numeric_cols:
+    df[col] = pd.to_numeric(df[col], errors='coerce')
 
-# Display first few rows
-print("\n2. FIRST 5 ROWS:")
-print(df.head())
+# Guardar CSV final
+df.to_csv("Amazon_Discover_Renamed.csv", index=False, sep=',', decimal='.')
 
-# Display last few rows
-print("\n3. LAST 5 ROWS:")
-print(df.tail())
+
+
+
+
+
+
+
+
+# pd.set_option('display.max_columns', None)  # Mostrar todas las columnas
+# pd.set_option('display.width', 180)         # Ajusta el ancho de la salida
+# pd.set_option('display.max_rows', 100)
+# pd.set_option('display.float_format', '{:.2f}'.format)
+
+# # Set style for plots
+# plt.style.use('seaborn-v0_8-darkgrid')
+# sns.set_palette("husl")
+
+# # Load the dataset
+# df = pd.read_csv(DATASET)
+
+# print("\n1. DATASET DIMENSIONS:")
+# print(f"   Shape: {df.shape}")
+# print(f"   Total Records: {df.shape[0]:,}")
+# print(f"   Total Features: {df.shape[1]}")
+
+# # Display first few rows
+# print("\n2. FIRST 5 ROWS:")
+# print(df.head())
+
+# # Display last few rows
+# print("\n3. LAST 5 ROWS:")
+# print(df.tail())
 
 # dtypes = {
 #     'year': 'Int16',
